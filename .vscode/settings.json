@@ -1,0 +1,22 @@
+{
+  "editor.formatOnSave": false,
+  "[javascript]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "[css]": {
+    "editor.formatOnSave": true
+  },
+  "[liquid]": {
+    "editor.defaultFormatter": "Shopify.theme-check-vscode",
+    "editor.formatOnSave": false
+  },
+  "[scss]": {
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 250
+  },
+  "themeCheck.checkOnSave": true
+}

@@ -1,0 +1,13 @@
+{
+  "name": "ecuries_villain_theme",
+  "version": "0.0.1",
+  "description": "Fondation theme for Shopify custom theme",
+  "type": "module",
+  "scripts": {
+  },
+  "devDependencies": {
+    "jsdom": "^27.0.1"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,74 @@
+name: Shopify Theme Clone
+
+on:
+  workflow_dispatch:
+
+# Annule les runs en cours si un nouveau est lancé
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  clone-shopify-theme:
+    runs-on: ubuntu-latest
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '23.5.0'
+          # cache: 'npm'
+          # cache-dependency-path: package-lock.json
+
+      - name: Install dependencies for build
+        run: npm install jsdom
+
+      - name: Copy theme assets to build
+        run: |
+          echo "Copying theme assets..."
+
+          mkdir -p build
+          touch build/.nojekyll
+
+          # Copier tous les fichiers du dossier assets/ sauf les .liquid
+          if [ -d "assets" ]; then
+            find assets -type f ! -name "*.liquid" -exec cp {} build/ \;
+          else
+            echo "⚠ No assets folder found"
+          fi
+
+      - name: Crawl and clone Shopify site
+        env:
+          SHOPIFY_STORE_NAME: ${{ vars.SHOPIFY_STORE_NAME }}
+          SHOPIFY_STORE_PASSWORD: ${{ secrets.SHOPIFY_STORE_PASSWORD }}
+          NEW_WEBSITE_URL: ${{ vars.NEW_WEBSITE_URL }}
+          SHOPIFY_SIGNATURE: ${{ secrets.SHOPIFY_SIGNATURE }}
+          SHOPIFY_SIGNATURE_INPUT: ${{ secrets.SHOPIFY_SIGNATURE_INPUT }}
+        run: node build.js
+
+      - name: Format HTML/CSS/JS with Prettier
+        run: |
+          # Utiliser npx qui cache automatiquement
+          echo "Formatting HTML, CSS, and JS files..."
+          npx --yes prettier@latest --write "build/**/*.{html,css,js}" --ignore-path .prettierignore
+          echo "✓ Formatting complete"
+
+      - name: Push to GitHub Pages repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'build'
+          destination-github-username: ${{ vars.TARGET_REPO_USERNAME }}
+          destination-repository-name: ${{ vars.TARGET_REPO_NAME }}
+          target-branch: main
+          user-email: 'github-actions[bot]@users.noreply.github.com'
+          user-name: 'github-actions[bot]'
+          commit-message: 'Deploy Shopify clone from ${{ github.repository }} - Run #${{ github.run_number }}'

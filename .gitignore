@@ -1,0 +1,28 @@
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+!**/glob-import/dir/node_modules
+.idea
+.pnpm-store
+*.cpuprofile
+*.local
+*.log
+/docs/.vitepress/cache
+/packages/vite/LICENSE
+dist
+dist-ssr
+explorations
+node_modules
+playground-temp
+temp
+.eslintcache
+*.js.map
+
+# Custom
+.env
